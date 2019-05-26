@@ -6,7 +6,7 @@ return [
     "settings" => [
         "displayErrorDetails" => true,
         "addContentLengthHeader" => true,
-        "determineRouteBeforeAppMiddleware" => true,
+        "determineRouteBeforeAppMiddleware" => false,
         "logger" => [
             "name" => "slim-app",
             "path" => isset($_ENV["docker"]) ? "php://stdout" : __DIR__ . "/../logs/app.log",

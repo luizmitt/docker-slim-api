@@ -116,7 +116,7 @@ $container["pdo"] = function ($container) {
 		// $pdo = new \Slim\PDO\Database($dsn, $usr, $pwd, $opt);
 		$pdo = new \FaaPz\PDO\Database($dsn, $usr, $pwd, $opt);
 	} else if ($driver == "mysql") {
-		$dsn = $db["driver"] . ":host=" . $db["host"] . ";dbname=" . $db["dbname"] . ";charset=" . $db["charset"];
+		$dsn = $db["driver"] . ":host=" . $db["host"] . ";port=" . $db["port"] . ";dbname=" . $db["dbname"] . ";charset=" . $db["charset"];
 		// $pdo = new \PDO($dsn, $usr, $pwd, $opt);
 		// $pdo = new \Slim\PDO\Database($dsn, $usr, $pwd, $opt);
 		$pdo = new \FaaPz\PDO\Database($dsn, $usr, $pwd, $opt);

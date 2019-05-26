@@ -19,7 +19,7 @@ return [
         "empty" => PDO::NULL_EMPTY_STRING,
         "to_string" => PDO::NULL_TO_STRING,
     ],
-    "default" => "oracle",
+    "default" => "mysql",
     "oracle" => [
         "development" => [
             "driver"      => "oci",
@@ -64,11 +64,11 @@ return [
     "mysql" => [
         "development" => [
             "driver"      => "mysql",
-            "dbname"      => "",
-            "host"        => "localhost",
+            "dbname"      => "SPMM",
+            "host"        => "172.17.0.2 ",
             "port"        => "3306",
-            "username"    => "",
-            "password"    => "",
+            "username"    => "root",
+            "password"    => "123456",
             "charset"     => "utf8mb4",
             "collation"   => "utf8mb4_unicode_ci",
             "prefix"      => "",

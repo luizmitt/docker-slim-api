@@ -33,9 +33,18 @@ $app->get("/info[/{id:[0-9]+}]", function (Request $request, Response $response,
 		phpinfo($args["id"]);
 	}
 });
+
+foreach(glob(__DIR__ . '/../public/route.*.php') as $file) {
+    if (file_exists($file)) {
+        require_once $file;
+    }
+}
+
 // Catch-all route to serve a 404 Not Found page if none of the routes match
 // NOTE: make sure this route is defined last
 $app->map(["GET", "POST", "PUT", "DELETE", "PATCH"], "/{routes:.+}", function (Request $request, Response $response, array $args) {
 	$handler = $this->notFoundHandler; // handle using the default Slim page not found handler
 	return $handler($request, $response);
 });
+
+
