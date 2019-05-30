@@ -6,6 +6,7 @@ $app->group('/auth', function() {
 
         $sth = $this->pdo->prepare("SELECT 
                                     U.TX_USUARIO, 
+                                    P.TX_NOME,
                                     P.TX_EMAIL, 
                                     PF.TX_CPF, 
                                     PJ.TX_CNPJ, 

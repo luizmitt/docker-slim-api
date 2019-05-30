@@ -1,24 +1,22 @@
 <?php
 
-// monolog
 $container["logger"] = function ($container) {
 	$settings = $container->get("settings")["logger"];
 	$logger = new \Monolog\Logger($settings["name"]);
 	$logger->pushProcessor(new \Monolog\Processor\UidProcessor());
-	// $logger->pushHandler(new \Monolog\Handler\StreamHandler($settings["path"], $settings["level"]));
-	/**
-	 * Serviço de Logging em Arquivo
-	 */
+
 	$stream = new \Monolog\Handler\StreamHandler($settings["path"], $settings["level"]);
 	$logger->pushHandler(new \Monolog\Handler\FingersCrossedHandler($stream, Monolog\Logger::INFO));
 	return $logger;
 };
 
-$container["secretkey"] = $container->get("settings")["secretKey"];
+$container["secretkey"]    = $container->get("settings")["secretKey"];
 $container["tokenExpires"] = $container->get("settings")["tokenExpires"];
+
 $container["phpErrorHandler"] = function ($container) {
 	return $container["errorHandler"];
 };
+
 $container["errorHandler"] = function ($container) {
 	return function ($request, $response, $exception) use ($container) {
 		$msg = $exception->getMessage();
@@ -56,7 +54,6 @@ $container["notFoundHandler"] = function ($container) {
 		];
 		$container["logger"]->warning($data["message"], $data);
 		return $container["response"]->withJson($data, $data["code"]);
-		// return $container["response"]->withJson($data, 200);
 	};
 };
 
@@ -92,21 +89,14 @@ $container["pdo"] = function ($container) {
 		// \PDO::ATTR_AUTOCOMMIT => true,
 	];
 
-	$driver = $configs["default"];
 
-	if (in_array(gethostname(), ["productionServer"])) {
-		$db = $configs[$driver]["production"];
-		$usr = $db["username"];
-		$pwd = $db["password"];
-	} else if (in_array(gethostname(), ["ratifyServer"])) {
-		$db = $configs[$driver]["ratify"];
-		$usr = $db["username"];
-		$pwd = $db["password"];
-	} else {
-		$db = $configs[$driver]["development"];
-		$usr = $db["username"];
-		$pwd = $db["password"];
-	}
+	$connection = $configs['default']; //development
+
+	$db = $configs['connections'][$connection];
+
+	$driver = $db['driver'];
+	$usr 	= $db['username'];
+	$pwd 	= $db['password'];
 
 	if ($driver == "oracle") {
 		$conf = "(SDU=4096)(SEND_BUF_SIZE=11784)(RECV_BUF_SIZE=11784)";

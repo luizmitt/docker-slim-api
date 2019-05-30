@@ -5,7 +5,7 @@ $app->add(function ($request, $response, $next) {
 	return $response;
 });
 
-$trailing = function ($request, $response, $next) {
+$app->add(function ($request, $response, $next) {
 	$uri = $request->getUri();
 	$path = $uri->getPath();
 	if ($path != "/" && substr($path, -1) == "/") {
@@ -19,8 +19,7 @@ $trailing = function ($request, $response, $next) {
 	}
 	$response = $next($request, $response);
 	return $response;
-};
-$app->add($trailing);
+});
 
 $app->add(new Clickjacking\Middleware\XFrameOptions());
 
@@ -40,7 +39,7 @@ $app->add(new Tuupola\Middleware\CorsMiddleware([
 			"message" => $arguments["message"],
 			"data"    => []
 		];
-		// return $container["response"]->withJson($data, $data["code"]);
+
 		return $response->withJson($data, $data["code"]);
 	}
 ]));

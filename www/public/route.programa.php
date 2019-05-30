@@ -2,14 +2,15 @@
 
 $app->group('/programas', function() {
     $this->get('/programa', function($req, $res, $params) {
-        $sth = $this->pdo->prepare("SELECT * FROM SPMM.PROGRAMA P INNER JOIN SPMM.MODULO M ON M.ID_MODULO = P.ID_MODULO INNER JOIN SISTEMA S ON S.ID_SISTEMA = M.ID_SISTEMA ORDER BY P.TX_PROGRAMA");
+        $sth = $this->pdo->prepare("SELECT * FROM SPMM.PROGRAMA P INNER JOIN SPMM.MODULO M ON M.ID_MODULO = P.ID_MODULO INNER JOIN SISTEMA S ON S.ID_SISTEMA = P.ID_SISTEMA ORDER BY P.TX_PROGRAMA;");
         $sth->execute();
         return $res->withStatus(200)->withJson($sth->fetchAll());
     });
 
     $this->post('/programa', function($req, $res, $params) {
         extract($req->getParsedBody());
-        $sth = $this->pdo->prepare("INSERT INTO SPMM.PROGRAMA (ID_MODULO,TX_PROGRAMA) VALUES (:ID_MODULO, :TX_PROGRAMA)");
+        $sth = $this->pdo->prepare("INSERT INTO SPMM.PROGRAMA (ID_SISTEMA, ID_MODULO,TX_PROGRAMA) VALUES (:ID_SISTEMA, :ID_MODULO, :TX_PROGRAMA)");
+        $sth->bindParam(':ID_SISTEMA', $ID_SISTEMA);
         $sth->bindParam(':ID_MODULO', $ID_MODULO);
         $sth->bindParam(':TX_PROGRAMA', $TX_PROGRAMA);
         if ($sth->execute()) {
@@ -24,8 +25,10 @@ $app->group('/programas', function() {
 
     $this->put('/programa/{id:[0-9]+}', function($req, $res, $params) {
         extract($req->getParsedBody());
-        $sth = $this->pdo->prepare("UPDATE SPMM.PROGRAMA SET TX_PROGRAMA=:TX_PROGRAMA WHERE ID_PROGRAMA = :ID_PROGRAMA");
+        $sth = $this->pdo->prepare("UPDATE SPMM.PROGRAMA SET ID_SISTEMA=:ID_SISTEMA, ID_MODULO=:ID_MODULO, TX_PROGRAMA=:TX_PROGRAMA WHERE ID_PROGRAMA = :ID_PROGRAMA");
         $sth->bindParam(':TX_PROGRAMA', $TX_PROGRAMA);
+        $sth->bindParam(':ID_SISTEMA', $ID_SISTEMA);
+        $sth->bindParam(':ID_MODULO', $ID_MODULO);
         $sth->bindParam(':ID_PROGRAMA', $params['id']);
         if ($sth->execute()) {
             return $res->withStatus(200)->withJson([

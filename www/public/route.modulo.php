@@ -2,15 +2,16 @@
 
 $app->group('/modulos', function() {
     $this->get('/modulo', function($req, $res, $params) {
-        $sth = $this->pdo->prepare("SELECT * FROM SPMM.MODULO M INNER JOIN SPMM.SISTEMA S ON S.ID_SISTEMA = M.ID_SISTEMA ORDER BY M.TX_MODULO");
+        $sth = $this->pdo->prepare("select *, IFNULL((SELECT A.TX_MODULO FROM MODULO A WHERE A.ID_SUBGRUPO = B.ID_MODULO),'-') AS TX_DEP from MODULO B ORDER BY B.ID_SUBGRUPO");
         $sth->execute();
         return $res->withStatus(200)->withJson($sth->fetchAll());
     });
 
     $this->post('/modulo', function($req, $res, $params) {
         extract($req->getParsedBody());
-        $sth = $this->pdo->prepare("INSERT INTO SPMM.MODULO (ID_SISTEMA,TX_MODULO) VALUES (:ID_SISTEMA, :TX_MODULO)");
+        $sth = $this->pdo->prepare("INSERT INTO SPMM.MODULO (ID_SISTEMA,ID_SUBGRUPO,TX_MODULO) VALUES (:ID_SISTEMA, :ID_SUBGRUPO, :TX_MODULO)");
         $sth->bindParam(':ID_SISTEMA', $ID_SISTEMA);
+        $sth->bindParam(':ID_SUBGRUPO', $ID_SUBGRUPO);
         $sth->bindParam(':TX_MODULO', $TX_MODULO);
         if ($sth->execute()) {
             $sth = $this->pdo->prepare("SELECT LAST_INSERT_ID() AS ID");
@@ -24,7 +25,8 @@ $app->group('/modulos', function() {
 
     $this->put('/modulo/{id:[0-9]+}', function($req, $res, $params) {
         extract($req->getParsedBody());
-        $sth = $this->pdo->prepare("UPDATE SPMM.MODULO SET TX_MODULO=:TX_MODULO WHERE ID_MODULO = :ID_MODULO");
+        $sth = $this->pdo->prepare("UPDATE SPMM.MODULO SET ID_SISTEMA=:ID_SISTEMA,TX_MODULO=:TX_MODULO WHERE ID_MODULO = :ID_MODULO");
+        $sth->bindParam(':ID_SISTEMA', $ID_SISTEMA);
         $sth->bindParam(':TX_MODULO', $TX_MODULO);
         $sth->bindParam(':ID_MODULO', $params['id']);
         if ($sth->execute()) {
