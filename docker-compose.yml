@@ -1,5 +1,8 @@
 version: "2"
 
+volumes:
+  mysql_data:
+
 services:
     mysql:
         image: mysql:5.7
@@ -11,7 +14,7 @@ services:
         expose:
             - 3306
         volumes:
-            - ./config/mysql:/var/lib/mysql
+            - mysql_data:/var/lib/mysql
         environment:
             MYSQL_ROOT_PASSWORD: 123456
             MYSQL_USER: root
@@ -29,6 +32,8 @@ services:
             - "traefik.enable=true"            
         volumes:
             - ./www:/var/www
+        depends_on:
+            - mysql
         links:
             - mysql
         network_mode: "bridge"
@@ -50,7 +55,9 @@ services:
             - ./config/nginx/fastcgi.conf:/etc/nginx/fastcgi.conf
             - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf
             - ./www:/var/www
-            - /tmp:/var/www/logs            
+            - /tmp:/var/www/logs
+        depends_on:
+            - php
         links:
             - php
         network_mode: "bridge"
